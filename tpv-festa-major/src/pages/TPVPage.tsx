@@ -1,37 +1,190 @@
-import { useEffect, useState } from 'react'
-import type { Producte } from '../models/Producte'
-import { getProductes } from '../services/ConfigService'
+import { ActionButtons } from '../components/ActionButtons'
+import { AdminModal } from '../components/AdminModal'
+import { ChangeModal } from '../components/ChangeModal'
+import { PaymentModal } from '../components/PaymentModal'
+import { ProductButton } from '../components/ProductButton'
+import { SaleSummary } from '../components/SaleSummary'
+import { SessionModal } from '../components/SessionModal'
+import type { Product } from '../models/Product'
+import type { SaleLine } from '../models/SaleLine'
+import type { Session } from '../models/Session'
 
-export function TPVPage() {
-  const [productes, setProductes] = useState<Producte[]>([])
+type TPVPageProps = {
+  productes: Product[]
+  saleItems: SaleLine[]
+  totalVenda: number
+  session: Session | null
+  terminal: string
+  nextOperationDisplay: string
+  isSaleEmpty: boolean
+  isSessionModalOpen: boolean
+  sessionNameInput: string
+  isAdminModalOpen: boolean
+  isPaymentModalOpen: boolean
+  cashAmount: string
+  paymentError: string
+  changeAmount: number
+  isChangeModalOpen: boolean
+  isCardModalOpen: boolean
+  statusMessage: string
+  onSessionNameChange: (value: string) => void
+  onStartSession: () => void
+  onProductClick: (producte: Product) => void
+  onIncrement: (productId: string) => void
+  onDecrement: (productId: string) => void
+  onCancel: () => void
+  onCashPayment: () => void
+  onCardPayment: () => void
+  onAdmin: () => void
+  onCloseSession: () => void
+  onCloseAdmin: () => void
+  onCashAmountChange: (value: string) => void
+  onExactCashPayment: () => void
+  onCalculateChange: () => void
+  onClosePaymentModal: () => void
+  onAcceptChange: () => void
+  onConfirmCardPayment: () => void
+  onCancelCardPayment: () => void
+}
 
-  useEffect(() => {
-    let isMounted = true
-
-    getProductes().then((productesCarregats) => {
-      if (isMounted) {
-        setProductes(productesCarregats)
-      }
-    })
-
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
+export function TPVPage({
+  productes,
+  saleItems,
+  totalVenda,
+  session,
+  terminal,
+  nextOperationDisplay,
+  isSaleEmpty,
+  isSessionModalOpen,
+  sessionNameInput,
+  isAdminModalOpen,
+  isPaymentModalOpen,
+  cashAmount,
+  paymentError,
+  changeAmount,
+  isChangeModalOpen,
+  isCardModalOpen,
+  statusMessage,
+  onSessionNameChange,
+  onStartSession,
+  onProductClick,
+  onIncrement,
+  onDecrement,
+  onCancel,
+  onCashPayment,
+  onCardPayment,
+  onAdmin,
+  onCloseSession,
+  onCloseAdmin,
+  onCashAmountChange,
+  onExactCashPayment,
+  onCalculateChange,
+  onClosePaymentModal,
+  onAcceptChange,
+  onConfirmCardPayment,
+  onCancelCardPayment,
+}: TPVPageProps) {
   return (
     <main className="app">
       <section className="tpv-page">
-        <h1>TPV FESTA MAJOR</h1>
-        <ul className="productes-list">
+        <header className="tpv-header">
+          <h1>TPV FESTA MAJOR</h1>
+          <dl className="session-summary" aria-label="Sessió actual">
+            <div>
+              <dt>Sessió</dt>
+              <dd>{session?.name ?? '-'}</dd>
+            </div>
+            <div>
+              <dt>Terminal</dt>
+              <dd>{terminal}</dd>
+            </div>
+            <div>
+              <dt>Operació</dt>
+              <dd>{nextOperationDisplay}</dd>
+            </div>
+          </dl>
+        </header>
+
+        <section className="productes-panel" aria-label="Productes">
           {productes.map((producte) => (
-            <li className="producte-item" key={producte.id}>
-              <span>{producte.nom}</span>
-              <span className="producte-preu">{producte.preu} €</span>
-            </li>
+            <ProductButton
+              key={producte.id}
+              producte={producte}
+              onClick={onProductClick}
+            />
           ))}
-        </ul>
+        </section>
+
+        <SaleSummary
+          items={saleItems}
+          total={totalVenda}
+          onIncrement={onIncrement}
+          onDecrement={onDecrement}
+        />
+
+        <ActionButtons
+          disabled={isSaleEmpty}
+          onCancel={onCancel}
+          onCashPayment={onCashPayment}
+          onCardPayment={onCardPayment}
+          onAdmin={onAdmin}
+        />
       </section>
+
+      {statusMessage !== '' && (
+        <div className="status-message" role="status">
+          {statusMessage}
+        </div>
+      )}
+
+      {isSessionModalOpen && (
+        <SessionModal
+          sessionName={sessionNameInput}
+          onSessionNameChange={onSessionNameChange}
+          onStartSession={onStartSession}
+        />
+      )}
+
+      {isAdminModalOpen && (
+        <AdminModal onCloseSession={onCloseSession} onCancel={onCloseAdmin} />
+      )}
+
+      {isPaymentModalOpen && (
+        <PaymentModal
+          total={totalVenda}
+          amount={cashAmount}
+          error={paymentError}
+          onAmountChange={onCashAmountChange}
+          onExactPayment={onExactCashPayment}
+          onCalculateChange={onCalculateChange}
+          onCancel={onClosePaymentModal}
+        />
+      )}
+
+      {isChangeModalOpen && (
+        <ChangeModal changeAmount={changeAmount} onAccept={onAcceptChange} />
+      )}
+
+      {isCardModalOpen && (
+        <div className="modal-backdrop">
+          <section
+            className="modal card-modal"
+            aria-labelledby="card-payment-title"
+            role="dialog"
+            aria-modal="true"
+          >
+            <h2 id="card-payment-title">Confirmar pagament?</h2>
+            <div className="modal-actions">
+              <button type="button" onClick={onConfirmCardPayment}>
+                Confirmar
+              </button>
+              <button type="button" onClick={onCancelCardPayment}>
+                Cancel·lar
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   )
 }

@@ -1,10 +1,13 @@
-import type { Product } from './Product'
+import type { SaleLine } from './SaleLine'
+
+export type PaymentMethod = 'cash' | 'card'
 
 export type Sale = {
-  operationId: string
+  operationNumber: string
   terminal: string
+  sessionId: string
   timestamp: string
-  products: Product[]
-  paymentType: string
+  paymentMethod: PaymentMethod
   total: number
+  lines: SaleLine[]
 }

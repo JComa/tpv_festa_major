@@ -1,6 +1,10 @@
+import type { Sale } from './Sale'
+
 export type Session = {
   id: string
-  nom: string
-  timestamp: string
+  name: string
+  createdAt: string
   terminal: string
+  operationCounter: number
+  sales: Sale[]
 }
