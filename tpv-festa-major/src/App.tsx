@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { TERMINAL_NAME } from './config/config'
-import type { Operation } from './models/Operation'
+import type {
+  Operation,
+  OperationPaymentMethod,
+} from './models/Operation'
 import type { Product } from './models/Product'
-import type { PaymentMethod, Sale } from './models/Sale'
 import type { SaleLine } from './models/SaleLine'
 import type { Session } from './models/Session'
 import { TPVPage } from './pages/TPVPage'
@@ -35,8 +37,11 @@ function formatOperationCounter(counter: number) {
   return counter.toString().padStart(6, '0')
 }
 
-function getOperationNumber(counter: number) {
-  return `${TERMINAL_NAME}-${formatOperationCounter(counter)}`
+function getOperationId(counter: number, date: Date) {
+  const dateId = formatSessionTimestamp(date).slice(0, 8)
+  const terminalId = TERMINAL_NAME.replace(/[^a-zA-Z0-9]/g, '')
+
+  return `${dateId}-${terminalId}-${formatOperationCounter(counter)}`
 }
 
 function updateLineQuantity(line: SaleLine, quantitat: number): SaleLine {
@@ -44,29 +49,6 @@ function updateLineQuantity(line: SaleLine, quantitat: number): SaleLine {
     ...line,
     quantitat,
     subtotal: line.preu * quantitat,
-  }
-}
-
-function saleToOperation(sale: Sale): Operation {
-  const operationNumberMatch = sale.operationNumber.match(/(\d+)$/)
-
-  return {
-    id: sale.operationNumber,
-    operationNumber:
-      operationNumberMatch === null ? 0 : Number(operationNumberMatch[1]),
-    terminal: sale.terminal,
-    sessionId: sale.sessionId,
-    timestamp: sale.timestamp,
-    type: 'SALE',
-    paymentMethod: sale.paymentMethod === 'cash' ? 'EFECTIU' : 'TARGETA',
-    lines: sale.lines.map((line) => ({
-      productId: line.productId,
-      productName: line.nom,
-      quantity: line.quantitat,
-      unitPrice: line.preu,
-      total: line.subtotal,
-    })),
-    total: sale.total,
   }
 }
 
@@ -83,6 +65,8 @@ function App() {
   const [changeAmount, setChangeAmount] = useState(0)
   const [isChangeModalOpen, setIsChangeModalOpen] = useState(false)
   const [isCardModalOpen, setIsCardModalOpen] = useState(false)
+  const [isReturnGlassModalOpen, setIsReturnGlassModalOpen] = useState(false)
+  const [returnGlassQuantity, setReturnGlassQuantity] = useState(1)
   const [statusMessage, setStatusMessage] = useState('')
   const statusTimeoutRef = useRef<number | undefined>(undefined)
   const cardClearTimeoutRef = useRef<number | undefined>(undefined)
@@ -120,6 +104,21 @@ function App() {
     [saleItems],
   )
 
+  const currentCash = useMemo(
+    () =>
+      session?.operations.reduce((total, operation) => {
+        if (
+          operation.type === 'GLASS_RETURN' ||
+          operation.paymentMethod === 'EFECTIU'
+        ) {
+          return total + operation.total
+        }
+
+        return total
+      }, 0) ?? 0,
+    [session],
+  )
+
   const isSaleEmpty = saleItems.length === 0
   const nextOperationCounter = session?.operationCounter ?? 1
   const nextOperationDisplay = formatOperationCounter(nextOperationCounter)
@@ -145,19 +144,30 @@ function App() {
     setIsCardModalOpen(false)
   }
 
-  function registerSale(paymentMethod: PaymentMethod): Sale | null {
+  function registerSale(
+    paymentMethod: OperationPaymentMethod,
+  ): Operation | null {
     if (session === null || saleItems.length === 0) {
       return null
     }
 
-    const sale: Sale = {
-      operationNumber: getOperationNumber(session.operationCounter),
+    const now = new Date()
+    const operation: Operation = {
+      id: getOperationId(session.operationCounter, now),
+      operationNumber: session.operationCounter,
       terminal: TERMINAL_NAME,
       sessionId: session.id,
-      timestamp: new Date().toISOString(),
+      timestamp: now.toISOString(),
+      type: 'SALE',
       paymentMethod,
       total: totalVenda,
-      lines: saleItems.map((item) => ({ ...item })),
+      lines: saleItems.map((item) => ({
+        productId: item.productId,
+        productName: item.nom,
+        quantity: item.quantitat,
+        unitPrice: item.preu,
+        total: item.subtotal,
+      })),
     }
 
     setSession((currentSession) => {
@@ -168,17 +178,20 @@ function App() {
       return {
         ...currentSession,
         operationCounter: currentSession.operationCounter + 1,
-        sales: [...currentSession.sales, sale],
+        operations: [...currentSession.operations, operation],
       }
     })
 
-    return sale
+    return operation
   }
 
-  function finishSale(message: string, paymentMethod: PaymentMethod) {
-    const sale = registerSale(paymentMethod)
+  function finishSale(
+    message: string,
+    paymentMethod: OperationPaymentMethod,
+  ) {
+    const operation = registerSale(paymentMethod)
 
-    if (sale === null) {
+    if (operation === null) {
       return
     }
 
@@ -188,9 +201,9 @@ function App() {
   }
 
   function finishCardSale() {
-    const sale = registerSale('card')
+    const operation = registerSale('TARGETA')
 
-    if (sale === null) {
+    if (operation === null) {
       return
     }
 
@@ -221,12 +234,14 @@ function App() {
       createdAt: now.toISOString(),
       terminal: TERMINAL_NAME,
       operationCounter: 1,
-      sales: [],
+      operations: [],
     }
 
     setSession(newSession)
     setSessionNameInput('')
     setSaleItems([])
+    setIsReturnGlassModalOpen(false)
+    setReturnGlassQuantity(1)
     resetPaymentState()
   }
 
@@ -311,7 +326,7 @@ function App() {
   }
 
   function handleExactCashPayment() {
-    finishSale('Venda finalitzada', 'cash')
+    finishSale('Venda finalitzada', 'EFECTIU')
   }
 
   function handleCalculateChange() {
@@ -330,7 +345,7 @@ function App() {
     const calculatedChange = amountReceived - totalVenda
 
     if (calculatedChange === 0) {
-      finishSale('Venda finalitzada', 'cash')
+      finishSale('Venda finalitzada', 'EFECTIU')
       return
     }
 
@@ -346,7 +361,7 @@ function App() {
   }
 
   function handleAcceptChange() {
-    finishSale('Venda finalitzada', 'cash')
+    finishSale('Venda finalitzada', 'EFECTIU')
   }
 
   function handleConfirmCardPayment() {
@@ -355,6 +370,72 @@ function App() {
 
   function handleCancelCardPayment() {
     setIsCardModalOpen(false)
+  }
+
+  function handleOpenReturnGlass() {
+    if (session === null) {
+      showTemporaryMessage('No hi ha cap sessió activa')
+      return
+    }
+
+    setReturnGlassQuantity(1)
+    setIsReturnGlassModalOpen(true)
+  }
+
+  function handleIncrementReturnGlass() {
+    setReturnGlassQuantity((quantity) => quantity + 1)
+  }
+
+  function handleDecrementReturnGlass() {
+    setReturnGlassQuantity((quantity) => Math.max(1, quantity - 1))
+  }
+
+  function handleCancelReturnGlass() {
+    setIsReturnGlassModalOpen(false)
+    setReturnGlassQuantity(1)
+  }
+
+  function handleConfirmReturnGlass() {
+    if (session === null || returnGlassQuantity < 1) {
+      showTemporaryMessage('No es pot registrar el retorn de gots')
+      return
+    }
+
+    const now = new Date()
+    const total = -returnGlassQuantity
+    const operation: Operation = {
+      id: getOperationId(session.operationCounter, now),
+      operationNumber: session.operationCounter,
+      terminal: TERMINAL_NAME,
+      sessionId: session.id,
+      timestamp: now.toISOString(),
+      type: 'GLASS_RETURN',
+      lines: [
+        {
+          productId: 'got',
+          productName: 'GOT RETORNAT',
+          quantity: returnGlassQuantity,
+          unitPrice: -1,
+          total,
+        },
+      ],
+      total,
+    }
+
+    setSession((currentSession) => {
+      if (currentSession === null) {
+        return currentSession
+      }
+
+      return {
+        ...currentSession,
+        operationCounter: currentSession.operationCounter + 1,
+        operations: [...currentSession.operations, operation],
+      }
+    })
+    setIsReturnGlassModalOpen(false)
+    setReturnGlassQuantity(1)
+    showTemporaryMessage('Retorn de gots registrat')
   }
 
   function handleOpenAdmin() {
@@ -372,19 +453,11 @@ function App() {
     }
 
     try {
-      const operations = session.sales.map(saleToOperation)
-      const finalCash = operations
-        .filter(
-          (operation) =>
-            operation.type === 'SALE' &&
-            operation.paymentMethod === 'EFECTIU',
-        )
-        .reduce((total, operation) => total + operation.total, 0)
       const exportData = buildSessionExport({
         session,
         products: productes,
-        operations,
-        finalCash,
+        operations: session.operations,
+        finalCash: currentCash,
       })
 
       downloadSessionExport(exportData)
@@ -401,6 +474,8 @@ function App() {
       setSaleItems([])
       setSessionNameInput('')
       setIsAdminModalOpen(false)
+      setIsReturnGlassModalOpen(false)
+      setReturnGlassQuantity(1)
       resetPaymentState()
     }
   }
@@ -424,6 +499,8 @@ function App() {
       changeAmount={changeAmount}
       isChangeModalOpen={isChangeModalOpen}
       isCardModalOpen={isCardModalOpen}
+      isReturnGlassModalOpen={isReturnGlassModalOpen}
+      returnGlassQuantity={returnGlassQuantity}
       statusMessage={statusMessage}
       onSessionNameChange={setSessionNameInput}
       onStartSession={handleStartSession}
@@ -433,6 +510,11 @@ function App() {
       onCancel={handleCancel}
       onCashPayment={handleCashPayment}
       onCardPayment={handleCardPayment}
+      onReturnGlass={handleOpenReturnGlass}
+      onIncrementReturnGlass={handleIncrementReturnGlass}
+      onDecrementReturnGlass={handleDecrementReturnGlass}
+      onConfirmReturnGlass={handleConfirmReturnGlass}
+      onCancelReturnGlass={handleCancelReturnGlass}
       onAdmin={handleOpenAdmin}
       onExportSession={handleExportSession}
       onCloseSession={handleCloseSession}

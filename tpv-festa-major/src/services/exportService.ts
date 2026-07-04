@@ -40,8 +40,8 @@ export function buildSessionExport({
       totalCard: sales
         .filter((operation) => operation.paymentMethod === 'TARGETA')
         .reduce((total, operation) => total + operation.total, 0),
-      totalGlassReturns: -glassReturns.reduce(
-        (total, operation) => total + Math.abs(operation.total),
+      totalGlassReturns: glassReturns.reduce(
+        (total, operation) => total + operation.total,
         0,
       ),
       finalCash,

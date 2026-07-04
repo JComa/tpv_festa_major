@@ -216,6 +216,11 @@ button:disabled:hover {
   color: #991b1b;
 }
 
+.return-glass-button {
+  border-color: #0f766e;
+  color: #115e59;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -397,6 +402,68 @@ button:disabled:hover {
 
 .card-modal {
   width: min(100%, 380px);
+}
+
+.return-glass-modal {
+  width: min(100%, 460px);
+}
+
+.return-glass-quantity,
+.return-glass-total {
+  display: grid;
+  gap: 14px;
+  margin: 28px 0;
+  text-align: center;
+}
+
+.return-glass-quantity > span,
+.return-glass-total > span {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.quantity-selector {
+  display: grid;
+  grid-template-columns: 56px minmax(72px, 1fr) 56px;
+  align-items: center;
+  gap: 16px;
+  width: min(100%, 240px);
+  margin: 0 auto;
+}
+
+.quantity-selector button {
+  width: 56px;
+  height: 56px;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 28px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.quantity-selector button:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.quantity-selector button:disabled,
+.quantity-selector button:disabled:hover {
+  border-color: #e5e7eb;
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.quantity-selector strong {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.return-glass-total strong {
+  font-size: 44px;
+  line-height: 1;
 }
 
 .status-message {

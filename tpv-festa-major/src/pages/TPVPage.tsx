@@ -3,6 +3,7 @@ import { AdminModal } from '../components/AdminModal'
 import { ChangeModal } from '../components/ChangeModal'
 import { PaymentModal } from '../components/PaymentModal'
 import { ProductGrid } from '../components/ProductGrid'
+import { ReturnGlassModal } from '../components/ReturnGlassModal'
 import { SaleSummary } from '../components/SaleSummary'
 import { SessionModal } from '../components/SessionModal'
 import type { Product } from '../models/Product'
@@ -27,6 +28,8 @@ type TPVPageProps = {
   changeAmount: number
   isChangeModalOpen: boolean
   isCardModalOpen: boolean
+  isReturnGlassModalOpen: boolean
+  returnGlassQuantity: number
   statusMessage: string
   onSessionNameChange: (value: string) => void
   onStartSession: () => void
@@ -36,6 +39,11 @@ type TPVPageProps = {
   onCancel: () => void
   onCashPayment: () => void
   onCardPayment: () => void
+  onReturnGlass: () => void
+  onIncrementReturnGlass: () => void
+  onDecrementReturnGlass: () => void
+  onConfirmReturnGlass: () => void
+  onCancelReturnGlass: () => void
   onAdmin: () => void
   onExportSession: () => void
   onCloseSession: () => void
@@ -67,6 +75,8 @@ export function TPVPage({
   changeAmount,
   isChangeModalOpen,
   isCardModalOpen,
+  isReturnGlassModalOpen,
+  returnGlassQuantity,
   statusMessage,
   onSessionNameChange,
   onStartSession,
@@ -76,6 +86,11 @@ export function TPVPage({
   onCancel,
   onCashPayment,
   onCardPayment,
+  onReturnGlass,
+  onIncrementReturnGlass,
+  onDecrementReturnGlass,
+  onConfirmReturnGlass,
+  onCancelReturnGlass,
   onAdmin,
   onExportSession,
   onCloseSession,
@@ -131,9 +146,11 @@ export function TPVPage({
 
         <ActionButtons
           disabled={isSaleEmpty}
+          returnGlassDisabled={session === null}
           onCancel={onCancel}
           onCashPayment={onCashPayment}
           onCardPayment={onCardPayment}
+          onReturnGlass={onReturnGlass}
           onAdmin={onAdmin}
         />
       </section>
@@ -174,6 +191,16 @@ export function TPVPage({
 
       {isChangeModalOpen && (
         <ChangeModal changeAmount={changeAmount} onAccept={onAcceptChange} />
+      )}
+
+      {isReturnGlassModalOpen && (
+        <ReturnGlassModal
+          quantity={returnGlassQuantity}
+          onIncrement={onIncrementReturnGlass}
+          onDecrement={onDecrementReturnGlass}
+          onConfirm={onConfirmReturnGlass}
+          onCancel={onCancelReturnGlass}
+        />
       )}
 
       {isCardModalOpen && (

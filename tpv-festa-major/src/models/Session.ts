@@ -1,4 +1,4 @@
-import type { Sale } from './Sale'
+import type { Operation } from './Operation'
 
 export type Session = {
   id: string
@@ -6,5 +6,5 @@ export type Session = {
   createdAt: string
   terminal: string
   operationCounter: number
-  sales: Sale[]
+  operations: Operation[]
 }
