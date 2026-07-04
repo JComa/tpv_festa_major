@@ -1,0 +1,17 @@
+[
+  {
+    "id": "aigua",
+    "nom": "AIGUA",
+    "preu": 1
+  },
+  {
+    "id": "refresc",
+    "nom": "REFRESC",
+    "preu": 2
+  },
+  {
+    "id": "cervesa",
+    "nom": "CERVESA",
+    "preu": 2.5
+  }
+]

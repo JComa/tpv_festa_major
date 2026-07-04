@@ -1,9 +1,7 @@
+import { TPVPage } from './pages/TPVPage'
+
 function App() {
-  return (
-    <main className="app">
-      <h1>TPV FESTA MAJOR</h1>
-    </main>
-  )
+  return <TPVPage />
 }
 
 export default App

@@ -23,10 +23,43 @@ body {
   padding: 24px;
 }
 
+.tpv-page {
+  width: min(100%, 360px);
+}
+
 h1 {
-  margin: 0;
+  margin: 0 0 32px;
   font-size: 32px;
   font-weight: 700;
   letter-spacing: 0;
   text-align: center;
+}
+
+.productes-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.producte-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.producte-item::before {
+  content: '';
+  order: 2;
+  flex: 1;
+  border-bottom: 2px dotted #6b7280;
+  transform: translateY(-4px);
+}
+
+.producte-preu {
+  order: 3;
+  white-space: nowrap;
 }
