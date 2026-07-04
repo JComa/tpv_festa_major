@@ -13,6 +13,7 @@ import {
   buildSessionExport,
   downloadSessionExport,
 } from './services/exportService'
+import { calculateSessionSummary } from './services/summaryService'
 
 function formatDatePart(value: number) {
   return value.toString().padStart(2, '0')
@@ -59,6 +60,8 @@ function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [sessionNameInput, setSessionNameInput] = useState('')
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false)
+  const [isSessionSummaryModalOpen, setIsSessionSummaryModalOpen] =
+    useState(false)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [cashAmount, setCashAmount] = useState('')
   const [paymentError, setPaymentError] = useState('')
@@ -104,20 +107,14 @@ function App() {
     [saleItems],
   )
 
-  const currentCash = useMemo(
+  const sessionSummary = useMemo(
     () =>
-      session?.operations.reduce((total, operation) => {
-        if (
-          operation.type === 'GLASS_RETURN' ||
-          operation.paymentMethod === 'EFECTIU'
-        ) {
-          return total + operation.total
-        }
-
-        return total
-      }, 0) ?? 0,
+      session === null
+        ? null
+        : calculateSessionSummary(session, session.operations),
     [session],
   )
+  const currentCash = sessionSummary?.currentCash ?? 0
 
   const isSaleEmpty = saleItems.length === 0
   const nextOperationCounter = session?.operationCounter ?? 1
@@ -196,6 +193,7 @@ function App() {
     }
 
     setSaleItems([])
+    setIsSessionSummaryModalOpen(false)
     resetPaymentState()
     showTemporaryMessage(message)
   }
@@ -240,6 +238,7 @@ function App() {
     setSession(newSession)
     setSessionNameInput('')
     setSaleItems([])
+    setIsSessionSummaryModalOpen(false)
     setIsReturnGlassModalOpen(false)
     setReturnGlassQuantity(1)
     resetPaymentState()
@@ -446,6 +445,20 @@ function App() {
     setIsAdminModalOpen(false)
   }
 
+  function handleViewSessionSummary() {
+    if (session === null) {
+      showTemporaryMessage('No hi ha cap sessió activa')
+      return
+    }
+
+    setIsAdminModalOpen(false)
+    setIsSessionSummaryModalOpen(true)
+  }
+
+  function handleCloseSessionSummary() {
+    setIsSessionSummaryModalOpen(false)
+  }
+
   function handleExportSession() {
     if (session === null) {
       showTemporaryMessage('No hi ha cap sessió activa')
@@ -474,6 +487,7 @@ function App() {
       setSaleItems([])
       setSessionNameInput('')
       setIsAdminModalOpen(false)
+      setIsSessionSummaryModalOpen(false)
       setIsReturnGlassModalOpen(false)
       setReturnGlassQuantity(1)
       resetPaymentState()
@@ -493,6 +507,8 @@ function App() {
       isSessionModalOpen={session === null}
       sessionNameInput={sessionNameInput}
       isAdminModalOpen={isAdminModalOpen}
+      isSessionSummaryModalOpen={isSessionSummaryModalOpen}
+      sessionSummary={sessionSummary}
       isPaymentModalOpen={isPaymentModalOpen}
       cashAmount={cashAmount}
       paymentError={paymentError}
@@ -516,6 +532,8 @@ function App() {
       onConfirmReturnGlass={handleConfirmReturnGlass}
       onCancelReturnGlass={handleCancelReturnGlass}
       onAdmin={handleOpenAdmin}
+      onViewSessionSummary={handleViewSessionSummary}
+      onCloseSessionSummary={handleCloseSessionSummary}
       onExportSession={handleExportSession}
       onCloseSession={handleCloseSession}
       onCloseAdmin={handleCloseAdmin}

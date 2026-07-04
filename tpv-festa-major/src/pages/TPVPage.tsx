@@ -6,9 +6,11 @@ import { ProductGrid } from '../components/ProductGrid'
 import { ReturnGlassModal } from '../components/ReturnGlassModal'
 import { SaleSummary } from '../components/SaleSummary'
 import { SessionModal } from '../components/SessionModal'
+import { SessionSummaryModal } from '../components/SessionSummaryModal'
 import type { Product } from '../models/Product'
 import type { SaleLine } from '../models/SaleLine'
 import type { Session } from '../models/Session'
+import type { SessionSummary } from '../services/summaryService'
 
 type TPVPageProps = {
   productes: Product[]
@@ -22,6 +24,8 @@ type TPVPageProps = {
   isSessionModalOpen: boolean
   sessionNameInput: string
   isAdminModalOpen: boolean
+  isSessionSummaryModalOpen: boolean
+  sessionSummary: SessionSummary | null
   isPaymentModalOpen: boolean
   cashAmount: string
   paymentError: string
@@ -45,6 +49,8 @@ type TPVPageProps = {
   onConfirmReturnGlass: () => void
   onCancelReturnGlass: () => void
   onAdmin: () => void
+  onViewSessionSummary: () => void
+  onCloseSessionSummary: () => void
   onExportSession: () => void
   onCloseSession: () => void
   onCloseAdmin: () => void
@@ -69,6 +75,8 @@ export function TPVPage({
   isSessionModalOpen,
   sessionNameInput,
   isAdminModalOpen,
+  isSessionSummaryModalOpen,
+  sessionSummary,
   isPaymentModalOpen,
   cashAmount,
   paymentError,
@@ -92,6 +100,8 @@ export function TPVPage({
   onConfirmReturnGlass,
   onCancelReturnGlass,
   onAdmin,
+  onViewSessionSummary,
+  onCloseSessionSummary,
   onExportSession,
   onCloseSession,
   onCloseAdmin,
@@ -171,11 +181,23 @@ export function TPVPage({
 
       {isAdminModalOpen && (
         <AdminModal
+          onViewSessionSummary={onViewSessionSummary}
           onExportSession={onExportSession}
           onCloseSession={onCloseSession}
           onCancel={onCloseAdmin}
         />
       )}
+
+      {isSessionSummaryModalOpen &&
+        session !== null &&
+        sessionSummary !== null && (
+          <SessionSummaryModal
+            session={session}
+            summary={sessionSummary}
+            onClose={onCloseSessionSummary}
+            onExportSession={onExportSession}
+          />
+        )}
 
       {isPaymentModalOpen && (
         <PaymentModal

@@ -1,4 +1,5 @@
 import type { SaleLine } from '../models/SaleLine'
+import { formatMoney } from '../utils/money'
 
 type SaleSummaryProps = {
   items: SaleLine[]
@@ -6,11 +7,6 @@ type SaleSummaryProps = {
   onIncrement: (productId: string) => void
   onDecrement: (productId: string) => void
 }
-
-const currencyFormatter = new Intl.NumberFormat('ca-ES', {
-  style: 'currency',
-  currency: 'EUR',
-})
 
 export function SaleSummary({
   items,
@@ -34,7 +30,7 @@ export function SaleSummary({
             <tr key={item.productId}>
               <td>{item.nom}</td>
               <td>{item.quantitat}</td>
-              <td>{currencyFormatter.format(item.subtotal)}</td>
+              <td>{formatMoney(item.subtotal)}</td>
               <td>
                 <div className="quantity-actions">
                   <button
@@ -60,7 +56,7 @@ export function SaleSummary({
 
       <div className="total-summary">
         <span>TOTAL</span>
-        <strong>{currencyFormatter.format(total)}</strong>
+        <strong>{formatMoney(total)}</strong>
       </div>
     </section>
   )

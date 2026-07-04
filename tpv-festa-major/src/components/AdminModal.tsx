@@ -1,10 +1,12 @@
 type AdminModalProps = {
+  onViewSessionSummary: () => void
   onExportSession: () => void
   onCloseSession: () => void
   onCancel: () => void
 }
 
 export function AdminModal({
+  onViewSessionSummary,
   onExportSession,
   onCloseSession,
   onCancel,
@@ -19,6 +21,9 @@ export function AdminModal({
       >
         <h2 id="admin-title">Administració</h2>
         <div className="modal-actions">
+          <button type="button" onClick={onViewSessionSummary}>
+            Veure resum sessió
+          </button>
           <button type="button" onClick={onExportSession}>
             Exportar sessió
           </button>

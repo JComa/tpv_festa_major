@@ -2,6 +2,7 @@ import type { Operation } from '../models/Operation'
 import type { Product } from '../models/Product'
 import type { Session } from '../models/Session'
 import type { SessionExport } from '../models/SessionExport'
+import { calculateSessionSummary } from './summaryService'
 
 type BuildSessionExportParams = {
   session: Session
@@ -17,10 +18,7 @@ export function buildSessionExport({
   finalCash,
 }: BuildSessionExportParams): SessionExport {
   const exportedAt = new Date().toISOString()
-  const sales = operations.filter((operation) => operation.type === 'SALE')
-  const glassReturns = operations.filter(
-    (operation) => operation.type === 'GLASS_RETURN',
-  )
+  const summary = calculateSessionSummary(session, operations)
 
   return {
     version: 1,
@@ -33,19 +31,12 @@ export function buildSessionExport({
       closedAt: exportedAt,
     },
     summary: {
-      totalSales: sales.reduce((total, operation) => total + operation.total, 0),
-      totalCash: sales
-        .filter((operation) => operation.paymentMethod === 'EFECTIU')
-        .reduce((total, operation) => total + operation.total, 0),
-      totalCard: sales
-        .filter((operation) => operation.paymentMethod === 'TARGETA')
-        .reduce((total, operation) => total + operation.total, 0),
-      totalGlassReturns: glassReturns.reduce(
-        (total, operation) => total + operation.total,
-        0,
-      ),
+      totalSales: summary.totalSales,
+      totalCash: summary.totalCash,
+      totalCard: summary.totalCard,
+      totalGlassReturns: summary.totalGlassReturns,
       finalCash,
-      operationCount: operations.length,
+      operationCount: summary.operationCount,
     },
     products: products.map((product) => ({ ...product })),
     operations: operations.map((operation) => ({
