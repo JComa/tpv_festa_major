@@ -37,6 +37,7 @@ type TPVPageProps = {
   onCashPayment: () => void
   onCardPayment: () => void
   onAdmin: () => void
+  onExportSession: () => void
   onCloseSession: () => void
   onCloseAdmin: () => void
   onCashAmountChange: (value: string) => void
@@ -76,6 +77,7 @@ export function TPVPage({
   onCashPayment,
   onCardPayment,
   onAdmin,
+  onExportSession,
   onCloseSession,
   onCloseAdmin,
   onCashAmountChange,
@@ -151,7 +153,11 @@ export function TPVPage({
       )}
 
       {isAdminModalOpen && (
-        <AdminModal onCloseSession={onCloseSession} onCancel={onCloseAdmin} />
+        <AdminModal
+          onExportSession={onExportSession}
+          onCloseSession={onCloseSession}
+          onCancel={onCloseAdmin}
+        />
       )}
 
       {isPaymentModalOpen && (

@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { TERMINAL_NAME } from './config/config'
+import type { Operation } from './models/Operation'
 import type { Product } from './models/Product'
 import type { PaymentMethod, Sale } from './models/Sale'
 import type { SaleLine } from './models/SaleLine'
 import type { Session } from './models/Session'
 import { TPVPage } from './pages/TPVPage'
 import { loadProducts } from './services/configService'
+import {
+  buildSessionExport,
+  downloadSessionExport,
+} from './services/exportService'
 
 function formatDatePart(value: number) {
   return value.toString().padStart(2, '0')
@@ -39,6 +44,29 @@ function updateLineQuantity(line: SaleLine, quantitat: number): SaleLine {
     ...line,
     quantitat,
     subtotal: line.preu * quantitat,
+  }
+}
+
+function saleToOperation(sale: Sale): Operation {
+  const operationNumberMatch = sale.operationNumber.match(/(\d+)$/)
+
+  return {
+    id: sale.operationNumber,
+    operationNumber:
+      operationNumberMatch === null ? 0 : Number(operationNumberMatch[1]),
+    terminal: sale.terminal,
+    sessionId: sale.sessionId,
+    timestamp: sale.timestamp,
+    type: 'SALE',
+    paymentMethod: sale.paymentMethod === 'cash' ? 'EFECTIU' : 'TARGETA',
+    lines: sale.lines.map((line) => ({
+      productId: line.productId,
+      productName: line.nom,
+      quantity: line.quantitat,
+      unitPrice: line.preu,
+      total: line.subtotal,
+    })),
+    total: sale.total,
   }
 }
 
@@ -337,6 +365,36 @@ function App() {
     setIsAdminModalOpen(false)
   }
 
+  function handleExportSession() {
+    if (session === null) {
+      showTemporaryMessage('No hi ha cap sessió activa')
+      return
+    }
+
+    try {
+      const operations = session.sales.map(saleToOperation)
+      const finalCash = operations
+        .filter(
+          (operation) =>
+            operation.type === 'SALE' &&
+            operation.paymentMethod === 'EFECTIU',
+        )
+        .reduce((total, operation) => total + operation.total, 0)
+      const exportData = buildSessionExport({
+        session,
+        products: productes,
+        operations,
+        finalCash,
+      })
+
+      downloadSessionExport(exportData)
+      showTemporaryMessage('Sessió exportada correctament')
+    } catch (error: unknown) {
+      console.error("Error exportant la sessió:", error)
+      showTemporaryMessage("No s'ha pogut exportar la sessió")
+    }
+  }
+
   function handleCloseSession() {
     if (window.confirm('Vols tancar la sessió? Les vendes es perdran.')) {
       setSession(null)
@@ -376,6 +434,7 @@ function App() {
       onCashPayment={handleCashPayment}
       onCardPayment={handleCardPayment}
       onAdmin={handleOpenAdmin}
+      onExportSession={handleExportSession}
       onCloseSession={handleCloseSession}
       onCloseAdmin={handleCloseAdmin}
       onCashAmountChange={handleCashAmountChange}

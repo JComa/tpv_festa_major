@@ -1,9 +1,14 @@
 type AdminModalProps = {
+  onExportSession: () => void
   onCloseSession: () => void
   onCancel: () => void
 }
 
-export function AdminModal({ onCloseSession, onCancel }: AdminModalProps) {
+export function AdminModal({
+  onExportSession,
+  onCloseSession,
+  onCancel,
+}: AdminModalProps) {
   return (
     <div className="modal-backdrop">
       <section
@@ -14,6 +19,9 @@ export function AdminModal({ onCloseSession, onCancel }: AdminModalProps) {
       >
         <h2 id="admin-title">Administració</h2>
         <div className="modal-actions">
+          <button type="button" onClick={onExportSession}>
+            Exportar sessió
+          </button>
           <button type="button" onClick={onCloseSession}>
             Tancar sessió
           </button>
