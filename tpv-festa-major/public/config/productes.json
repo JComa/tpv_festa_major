@@ -1,17 +1,62 @@
 [
   {
+    "id": "got",
+    "nom": "GOT",
+    "preu": 1,
+    "actiu": true
+  },
+  {
     "id": "aigua",
     "nom": "AIGUA",
-    "preu": 1
+    "preu": 1,
+    "actiu": true
   },
   {
     "id": "refresc",
     "nom": "REFRESC",
-    "preu": 2
+    "preu": 2,
+    "actiu": true
   },
   {
     "id": "cervesa",
     "nom": "CERVESA",
-    "preu": 2.5
+    "preu": 2.5,
+    "actiu": true
+  },
+  {
+    "id": "combinat",
+    "nom": "COMBINAT",
+    "preu": 6,
+    "actiu": true
+  },
+  {
+    "id": "beguda-energetica",
+    "nom": "BEGUDA ENERGÈTICA",
+    "preu": 3,
+    "actiu": true
+  },
+  {
+    "id": "coctel-mojito",
+    "nom": "CÒCTEL-MOJITO",
+    "preu": 5,
+    "actiu": true
+  },
+  {
+    "id": "xarrup",
+    "nom": "XARRUP",
+    "preu": 2.5,
+    "actiu": true
+  },
+  {
+    "id": "coctel-zero",
+    "nom": "CÒCTEL 0%",
+    "preu": 4,
+    "actiu": true
+  },
+  {
+    "id": "combinat-plus",
+    "nom": "COMBINAT+",
+    "preu": 7,
+    "actiu": true
   }
 ]

@@ -2,7 +2,7 @@ import { ActionButtons } from '../components/ActionButtons'
 import { AdminModal } from '../components/AdminModal'
 import { ChangeModal } from '../components/ChangeModal'
 import { PaymentModal } from '../components/PaymentModal'
-import { ProductButton } from '../components/ProductButton'
+import { ProductGrid } from '../components/ProductGrid'
 import { SaleSummary } from '../components/SaleSummary'
 import { SessionModal } from '../components/SessionModal'
 import type { Product } from '../models/Product'
@@ -11,6 +11,7 @@ import type { Session } from '../models/Session'
 
 type TPVPageProps = {
   productes: Product[]
+  isLoadingProducts: boolean
   saleItems: SaleLine[]
   totalVenda: number
   session: Session | null
@@ -49,6 +50,7 @@ type TPVPageProps = {
 
 export function TPVPage({
   productes,
+  isLoadingProducts,
   saleItems,
   totalVenda,
   session,
@@ -105,15 +107,18 @@ export function TPVPage({
           </dl>
         </header>
 
-        <section className="productes-panel" aria-label="Productes">
-          {productes.map((producte) => (
-            <ProductButton
-              key={producte.id}
-              producte={producte}
-              onClick={onProductClick}
-            />
-          ))}
-        </section>
+        {isLoadingProducts ? (
+          <p className="products-state" role="status">
+            Carregant productes...
+          </p>
+        ) : productes.length === 0 ? (
+          <p className="products-state">No hi ha productes configurats</p>
+        ) : (
+          <ProductGrid
+            productes={productes}
+            onProductClick={onProductClick}
+          />
+        )}
 
         <SaleSummary
           items={saleItems}

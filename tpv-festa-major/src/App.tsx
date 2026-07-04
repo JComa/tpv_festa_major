@@ -5,7 +5,7 @@ import type { PaymentMethod, Sale } from './models/Sale'
 import type { SaleLine } from './models/SaleLine'
 import type { Session } from './models/Session'
 import { TPVPage } from './pages/TPVPage'
-import { getProductes } from './services/ConfigService'
+import { loadProducts } from './services/configService'
 
 function formatDatePart(value: number) {
   return value.toString().padStart(2, '0')
@@ -44,6 +44,7 @@ function updateLineQuantity(line: SaleLine, quantitat: number): SaleLine {
 
 function App() {
   const [productes, setProductes] = useState<Product[]>([])
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true)
   const [saleItems, setSaleItems] = useState<SaleLine[]>([])
   const [session, setSession] = useState<Session | null>(null)
   const [sessionNameInput, setSessionNameInput] = useState('')
@@ -61,14 +62,12 @@ function App() {
   useEffect(() => {
     let isMounted = true
 
-    getProductes()
+    loadProducts()
       .then((productesCarregats) => {
         if (isMounted) {
           setProductes(productesCarregats)
+          setIsLoadingProducts(false)
         }
-      })
-      .catch((error: unknown) => {
-        console.error(error)
       })
 
     return () => {
@@ -351,6 +350,7 @@ function App() {
   return (
     <TPVPage
       productes={productes}
+      isLoadingProducts={isLoadingProducts}
       saleItems={saleItems}
       totalVenda={totalVenda}
       session={session}
