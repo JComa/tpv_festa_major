@@ -134,25 +134,27 @@ export function TPVPage({
           </dl>
         </header>
 
-        {isLoadingProducts ? (
-          <p className="products-state" role="status">
-            Carregant productes...
-          </p>
-        ) : productes.length === 0 ? (
-          <p className="products-state">No hi ha productes configurats</p>
-        ) : (
-          <ProductGrid
-            productes={productes}
-            onProductClick={onProductClick}
-          />
-        )}
+        <div className="tpv-workspace">
+          {isLoadingProducts ? (
+            <p className="products-state" role="status">
+              Carregant productes...
+            </p>
+          ) : productes.length === 0 ? (
+            <p className="products-state">No hi ha productes configurats</p>
+          ) : (
+            <ProductGrid
+              productes={productes}
+              onProductClick={onProductClick}
+            />
+          )}
 
-        <SaleSummary
-          items={saleItems}
-          total={totalVenda}
-          onIncrement={onIncrement}
-          onDecrement={onDecrement}
-        />
+          <SaleSummary
+            items={saleItems}
+            total={totalVenda}
+            onIncrement={onIncrement}
+            onDecrement={onDecrement}
+          />
+        </div>
 
         <ActionButtons
           disabled={isSaleEmpty}

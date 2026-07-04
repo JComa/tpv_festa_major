@@ -13,6 +13,14 @@ import {
   buildSessionExport,
   downloadSessionExport,
 } from './services/exportService'
+import {
+  clearActiveSession,
+  clearCurrentSale,
+  loadActiveSession,
+  loadCurrentSale,
+  saveActiveSession,
+  saveCurrentSale,
+} from './services/persistenceService'
 import { calculateSessionSummary } from './services/summaryService'
 
 function formatDatePart(value: number) {
@@ -56,6 +64,7 @@ function updateLineQuantity(line: SaleLine, quantitat: number): SaleLine {
 function App() {
   const [productes, setProductes] = useState<Product[]>([])
   const [isLoadingProducts, setIsLoadingProducts] = useState(true)
+  const [hasRestoredPersistence, setHasRestoredPersistence] = useState(false)
   const [saleItems, setSaleItems] = useState<SaleLine[]>([])
   const [session, setSession] = useState<Session | null>(null)
   const [sessionNameInput, setSessionNameInput] = useState('')
@@ -73,6 +82,8 @@ function App() {
   const [statusMessage, setStatusMessage] = useState('')
   const statusTimeoutRef = useRef<number | undefined>(undefined)
   const cardClearTimeoutRef = useRef<number | undefined>(undefined)
+  const isCardSaleFinalizingRef = useRef(false)
+  const isSessionClosingRef = useRef(false)
 
   useEffect(() => {
     let isMounted = true
@@ -80,8 +91,28 @@ function App() {
     loadProducts()
       .then((productesCarregats) => {
         if (isMounted) {
+          const persistedSession = loadActiveSession()
+          const persistedSale = loadCurrentSale()
+
           setProductes(productesCarregats)
+
+          if (persistedSession !== null) {
+            isSessionClosingRef.current = false
+            setSession(persistedSession.session)
+
+            if (persistedSale?.sessionId === persistedSession.session.id) {
+              setSaleItems(persistedSale.saleItems)
+            } else {
+              clearCurrentSale()
+            }
+
+            showTemporaryMessage('Sessió recuperada automàticament')
+          } else {
+            clearCurrentSale()
+          }
+
           setIsLoadingProducts(false)
+          setHasRestoredPersistence(true)
         }
       })
 
@@ -119,6 +150,83 @@ function App() {
   const isSaleEmpty = saleItems.length === 0
   const nextOperationCounter = session?.operationCounter ?? 1
   const nextOperationDisplay = formatOperationCounter(nextOperationCounter)
+
+  useEffect(() => {
+    if (!hasRestoredPersistence) {
+      return
+    }
+
+    if (session === null || isSessionClosingRef.current) {
+      clearActiveSession()
+      return
+    }
+
+    saveActiveSession({
+      version: 1,
+      session,
+      currentCash,
+      savedAt: new Date().toISOString(),
+    })
+  }, [currentCash, hasRestoredPersistence, session])
+
+  useEffect(() => {
+    if (!hasRestoredPersistence) {
+      return
+    }
+
+    if (
+      session === null ||
+      isSessionClosingRef.current ||
+      saleItems.length === 0 ||
+      isCardSaleFinalizingRef.current
+    ) {
+      clearCurrentSale()
+      return
+    }
+
+    saveCurrentSale({
+      version: 1,
+      sessionId: session.id,
+      saleItems,
+      savedAt: new Date().toISOString(),
+    })
+  }, [hasRestoredPersistence, saleItems, session])
+
+  useEffect(() => {
+    if (!hasRestoredPersistence || session === null) {
+      return
+    }
+
+    const autosaveInterval = window.setInterval(() => {
+      if (isSessionClosingRef.current) {
+        clearActiveSession()
+        clearCurrentSale()
+        return
+      }
+
+      const savedAt = new Date().toISOString()
+
+      saveActiveSession({
+        version: 1,
+        session,
+        currentCash,
+        savedAt,
+      })
+
+      if (saleItems.length === 0 || isCardSaleFinalizingRef.current) {
+        clearCurrentSale()
+      } else {
+        saveCurrentSale({
+          version: 1,
+          sessionId: session.id,
+          saleItems,
+          savedAt,
+        })
+      }
+    }, 10_000)
+
+    return () => window.clearInterval(autosaveInterval)
+  }, [currentCash, hasRestoredPersistence, saleItems, session])
 
   function showTemporaryMessage(message: string) {
     if (statusTimeoutRef.current !== undefined) {
@@ -207,6 +315,8 @@ function App() {
 
     resetPaymentState()
     showTemporaryMessage('Pagament acceptat')
+    isCardSaleFinalizingRef.current = true
+    clearCurrentSale()
 
     if (cardClearTimeoutRef.current !== undefined) {
       window.clearTimeout(cardClearTimeoutRef.current)
@@ -214,6 +324,7 @@ function App() {
 
     cardClearTimeoutRef.current = window.setTimeout(() => {
       setSaleItems([])
+      isCardSaleFinalizingRef.current = false
       cardClearTimeoutRef.current = undefined
     }, 1000)
   }
@@ -235,9 +346,11 @@ function App() {
       operations: [],
     }
 
+    isSessionClosingRef.current = false
     setSession(newSession)
     setSessionNameInput('')
     setSaleItems([])
+    clearCurrentSale()
     setIsSessionSummaryModalOpen(false)
     setIsReturnGlassModalOpen(false)
     setReturnGlassQuantity(1)
@@ -459,10 +572,10 @@ function App() {
     setIsSessionSummaryModalOpen(false)
   }
 
-  function handleExportSession() {
+  function exportActiveSession(): boolean {
     if (session === null) {
       showTemporaryMessage('No hi ha cap sessió activa')
-      return
+      return false
     }
 
     try {
@@ -474,15 +587,30 @@ function App() {
       })
 
       downloadSessionExport(exportData)
-      showTemporaryMessage('Sessió exportada correctament')
+      return true
     } catch (error: unknown) {
       console.error("Error exportant la sessió:", error)
       showTemporaryMessage("No s'ha pogut exportar la sessió")
+      return false
+    }
+  }
+
+  function handleExportSession() {
+    if (exportActiveSession()) {
+      showTemporaryMessage('Sessió exportada correctament')
     }
   }
 
   function handleCloseSession() {
     if (window.confirm('Vols tancar la sessió? Les vendes es perdran.')) {
+      if (!exportActiveSession()) {
+        return
+      }
+
+      isSessionClosingRef.current = true
+      isCardSaleFinalizingRef.current = false
+      clearActiveSession()
+      clearCurrentSale()
       setSession(null)
       setSaleItems([])
       setSessionNameInput('')
@@ -504,7 +632,7 @@ function App() {
       terminal={TERMINAL_NAME}
       nextOperationDisplay={nextOperationDisplay}
       isSaleEmpty={isSaleEmpty}
-      isSessionModalOpen={session === null}
+      isSessionModalOpen={hasRestoredPersistence && session === null}
       sessionNameInput={sessionNameInput}
       isAdminModalOpen={isAdminModalOpen}
       isSessionSummaryModalOpen={isSessionSummaryModalOpen}

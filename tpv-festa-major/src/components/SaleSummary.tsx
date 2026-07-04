@@ -16,7 +16,8 @@ export function SaleSummary({
 }: SaleSummaryProps) {
   return (
     <section className="sale-summary" aria-label="Resum de venda">
-      <table>
+      <div className="sale-lines-scroll">
+        <table>
         <thead>
           <tr>
             <th scope="col">Producte</th>
@@ -52,7 +53,8 @@ export function SaleSummary({
             </tr>
           ))}
         </tbody>
-      </table>
+        </table>
+      </div>
 
       <div className="total-summary">
         <span>TOTAL</span>

@@ -8,12 +8,16 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
 }
 
-body {
-  margin: 0;
+* {
+  box-sizing: border-box;
 }
 
 button {
@@ -21,67 +25,90 @@ button {
 }
 
 .app {
-  min-height: 100vh;
-  padding: 24px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: clamp(8px, 1.2vw, 16px);
 }
 
 .tpv-page {
-  width: min(100%, 1120px);
-  min-height: calc(100vh - 48px);
-  display: grid;
-  grid-template-columns: minmax(180px, 260px) minmax(0, 1fr) 180px;
-  grid-template-rows: auto 1fr;
-  gap: 24px;
+  width: min(100%, 1600px);
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.1vh, 12px);
   margin: 0 auto;
 }
 
 h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: clamp(20px, 2vw, 28px);
   font-weight: 700;
   letter-spacing: 0;
   text-align: center;
 }
 
 .tpv-header {
-  grid-column: 1 / -1;
+  min-height: 0;
+  flex: 0 0 auto;
   display: grid;
-  gap: 16px;
-  padding: 8px 0;
+  grid-template-columns: minmax(180px, 1fr) minmax(420px, 2fr);
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 20px);
 }
 
 .session-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: clamp(6px, 0.8vw, 10px);
   margin: 0;
 }
 
 .session-summary div {
-  border: 2px solid #d1d5db;
-  border-radius: 8px;
+  min-width: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   background: #ffffff;
-  padding: 12px;
+  padding: clamp(5px, 0.7vh, 8px) 8px;
   text-align: center;
 }
 
 .session-summary dt {
   color: #6b7280;
-  font-size: 14px;
+  font-size: clamp(10px, 1vw, 12px);
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .session-summary dd {
-  margin: 4px 0 0;
-  font-size: 20px;
+  margin: 2px 0 0;
+  overflow: hidden;
+  font-size: clamp(13px, 1.4vw, 17px);
   font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tpv-workspace {
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
+  gap: clamp(8px, 1vw, 14px);
+  overflow: hidden;
 }
 
 .productes-panel {
   display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: clamp(58px, 9vh, 86px);
   align-content: start;
-  gap: 16px;
+  gap: clamp(6px, 0.8vw, 10px);
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .products-state {
@@ -90,7 +117,7 @@ h1 {
   border: 2px solid #d1d5db;
   border-radius: 8px;
   background: #ffffff;
-  padding: 20px;
+  padding: 14px;
   color: #4b5563;
   font-size: 18px;
   font-weight: 700;
@@ -102,13 +129,13 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 72px;
-  border: 2px solid #d1d5db;
-  border-radius: 8px;
+  min-height: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   background: #ffffff;
   color: #111827;
-  padding: 16px;
-  font-size: 20px;
+  padding: clamp(8px, 1vh, 12px);
+  font-size: clamp(14px, 1.25vw, 18px);
   font-weight: 600;
   cursor: pointer;
 }
@@ -135,11 +162,19 @@ button:disabled:hover {
 .sale-summary {
   display: flex;
   flex-direction: column;
+  min-height: 0;
   min-width: 0;
-  border: 2px solid #d1d5db;
-  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
   background: #ffffff;
-  padding: 20px;
+  padding: clamp(8px, 1vw, 14px);
+}
+
+.sale-lines-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow: auto;
 }
 
 .sale-summary table {
@@ -147,9 +182,16 @@ button:disabled:hover {
   border-collapse: collapse;
 }
 
+.sale-summary thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #ffffff;
+}
+
 .sale-summary th,
 .sale-summary td {
-  padding: 12px 8px;
+  padding: clamp(5px, 0.75vh, 8px) 5px;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
 }
@@ -167,48 +209,73 @@ button:disabled:hover {
 .quantity-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 4px;
 }
 
 .quantity-actions button {
-  width: 36px;
-  height: 36px;
-  border: 2px solid #d1d5db;
-  border-radius: 6px;
+  width: clamp(28px, 3.2vh, 34px);
+  height: clamp(28px, 3.2vh, 34px);
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
   background: #ffffff;
   color: #111827;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 700;
   cursor: pointer;
 }
 
 .total-summary {
   display: grid;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 24px;
+  flex: 0 0 auto;
+  gap: 3px;
+  margin-top: clamp(6px, 1vh, 10px);
+  padding-top: clamp(7px, 1vh, 11px);
   border-top: 2px solid #111827;
   text-align: right;
 }
 
 .total-summary span {
-  font-size: 20px;
+  font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 700;
 }
 
 .total-summary strong {
-  font-size: 56px;
+  font-size: clamp(30px, 4.2vw, 48px);
   line-height: 1;
 }
 
 .action-buttons {
   display: grid;
-  align-content: start;
-  gap: 16px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  flex: 0 0 auto;
+  gap: clamp(6px, 0.8vw, 10px);
 }
 
 .action-buttons button {
   justify-content: center;
+  min-height: clamp(46px, 6.5vh, 58px);
+  padding: 7px 10px;
+  font-size: clamp(13px, 1.2vw, 17px);
+}
+
+.action-buttons button:nth-child(1) {
+  order: 4;
+}
+
+.action-buttons button:nth-child(2) {
+  order: 1;
+}
+
+.action-buttons button:nth-child(3) {
+  order: 2;
+}
+
+.action-buttons button:nth-child(4) {
+  order: 3;
+}
+
+.action-buttons button:nth-child(5) {
+  order: 5;
 }
 
 .cancel-button {
@@ -648,44 +715,59 @@ button:disabled:hover {
 }
 
 @media (max-width: 820px) {
-  .tpv-page {
-    grid-template-columns: 1fr;
+  .tpv-header {
+    grid-template-columns: minmax(140px, 0.8fr) minmax(390px, 2fr);
   }
 
-  .session-summary {
-    grid-template-columns: 1fr;
+  .tpv-workspace {
+    grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
   }
 
-  .sale-summary {
-    min-height: 360px;
+  .productes-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .tpv-header {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .tpv-header h1 {
+    font-size: 18px;
+    text-align: left;
+  }
+
+  .tpv-workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 1fr);
+  }
+
+  .action-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .action-buttons button {
+    min-height: 42px;
+  }
+
+  .action-buttons button:nth-child(1) {
+    order: 5;
+  }
+
+  .action-buttons button:nth-child(5) {
+    order: 4;
   }
 }
 
 @media (max-width: 560px) {
-  .app {
-    padding: 16px;
+  .sale-summary th,
+  .sale-summary td {
+    font-size: 12px;
   }
 
-  .tpv-page {
-    min-height: calc(100vh - 32px);
-    gap: 16px;
-  }
-
-  h1 {
-    font-size: 28px;
-  }
-
-  .sale-summary {
-    overflow-x: auto;
-  }
-
-  .total-summary strong {
-    font-size: 40px;
-  }
-
-  .product-button,
-  .action-buttons button {
-    min-height: 60px;
+  .quantity-actions {
+    flex-direction: column;
   }
 
   .session-summary-modal {
