@@ -132,16 +132,18 @@ h1 {
   min-height: 0;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  background: #ffffff;
-  color: #111827;
   padding: clamp(8px, 1vh, 12px);
   font-size: clamp(14px, 1.25vw, 18px);
   font-weight: 600;
   cursor: pointer;
 }
 
+.product-button {
+  background: #ffffff;
+  color: #111827;
+}
+
 .product-button:hover,
-.action-buttons button:hover,
 .quantity-actions button:hover {
   border-color: #2563eb;
   background: #eff6ff;
@@ -276,16 +278,6 @@ button:disabled:hover {
 
 .action-buttons button:nth-child(5) {
   order: 5;
-}
-
-.cancel-button {
-  border-color: #dc2626;
-  color: #991b1b;
-}
-
-.return-glass-button {
-  border-color: #0f766e;
-  color: #115e59;
 }
 
 .modal-backdrop {
@@ -795,4 +787,431 @@ button:disabled:hover {
     margin: 24px -20px -20px;
     padding: 14px 20px;
   }
+}
+
+/* High-contrast point-of-sale theme */
+:root {
+  color: var(--color-text);
+  background: var(--color-bg);
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--color-warning);
+  outline-offset: 2px;
+}
+
+.app {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.tpv-header,
+.productes-panel {
+  background: var(--color-panel);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+
+.tpv-header {
+  padding: clamp(6px, 0.8vw, 10px);
+}
+
+.session-summary div {
+  border-color: var(--color-product-border);
+  background: var(--color-bg-soft);
+}
+
+.session-summary dt {
+  color: var(--color-text-muted);
+}
+
+.session-summary dd {
+  color: var(--color-text);
+}
+
+.productes-panel {
+  padding: clamp(7px, 0.8vw, 11px);
+  scrollbar-color: var(--color-primary-light) var(--color-bg-soft);
+}
+
+.products-state {
+  border-color: var(--color-product-border);
+  background: var(--color-panel);
+  color: var(--color-text-muted);
+  box-shadow: var(--shadow-panel);
+}
+
+.product-button {
+  border-color: var(--color-product-border);
+  background: var(--color-product-bg);
+  color: var(--color-text);
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    filter 120ms ease,
+    transform 80ms ease;
+}
+
+.product-button:hover {
+  border-color: var(--color-total);
+  background: var(--color-primary);
+}
+
+.product-button:active {
+  transform: scale(0.98);
+}
+
+.product-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.product-price {
+  flex: 0 0 auto;
+  color: var(--color-total);
+  font-size: clamp(16px, 1.45vw, 21px);
+  font-weight: 900;
+}
+
+.sale-summary {
+  border-color: var(--color-product-border);
+  background: var(--color-panel-strong);
+  color: var(--color-total);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+
+.sale-summary thead {
+  background: var(--color-panel-strong);
+  color: var(--color-text-muted);
+}
+
+.sale-summary th,
+.sale-summary td {
+  border-bottom-color: var(--color-product-border);
+}
+
+.sale-summary td:first-child {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.sale-summary td:nth-child(2),
+.sale-summary td:nth-child(3) {
+  color: var(--color-total);
+  font-weight: 800;
+}
+
+.sale-lines-scroll {
+  scrollbar-color: var(--color-primary-light) var(--color-bg-soft);
+}
+
+.quantity-actions button {
+  border-color: var(--color-product-border);
+  background: var(--color-primary);
+  color: var(--color-text);
+}
+
+.quantity-actions button:last-child {
+  background: var(--color-danger);
+}
+
+.quantity-actions button:hover {
+  border-color: var(--color-total);
+  background: var(--color-primary-light);
+  filter: brightness(1.12);
+}
+
+.quantity-actions button:last-child:hover {
+  background: var(--color-danger);
+}
+
+.total-summary {
+  border-top-color: var(--color-total);
+}
+
+.total-summary span {
+  color: var(--color-text);
+}
+
+.total-summary strong {
+  color: var(--color-total-strong);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 900;
+  text-shadow: 0 0 18px rgba(0, 255, 0, 0.18);
+}
+
+.action-buttons .action-button {
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-weight: 800;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-panel);
+  transition:
+    filter 120ms ease,
+    transform 120ms ease;
+}
+
+.action-buttons .action-button:hover:not(:disabled) {
+  border: 0;
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.action-buttons .action-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.action-buttons .action-button.cash {
+  background-color: var(--color-cash);
+  color: #ffffff;
+}
+
+.action-buttons .action-button.card {
+  background-color: var(--color-card);
+  color: #ffffff;
+}
+
+.action-buttons .action-button.glass-return {
+  background-color: var(--color-warning);
+  color: #000000;
+}
+
+.action-buttons .action-button.cancel {
+  background-color: var(--color-danger);
+  color: #ffffff;
+}
+
+.action-buttons .action-button.admin {
+  background-color: var(--color-admin);
+  color: #000000;
+}
+
+.action-buttons .action-button:disabled,
+.action-buttons .action-button:disabled:hover {
+  background-color: #3a3a3a;
+  color: #94a3b8;
+  filter: grayscale(0.75);
+  opacity: 0.62;
+  box-shadow: none;
+}
+
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.modal {
+  border: 1px solid var(--color-product-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-panel);
+  color: var(--color-text);
+  box-shadow: var(--shadow-panel);
+}
+
+.modal h2,
+.summary-section h3 {
+  color: var(--color-text);
+}
+
+.payment-total span,
+.payment-form label,
+.return-glass-quantity > span,
+.return-glass-total > span,
+.session-form label {
+  color: var(--color-text-muted);
+}
+
+.payment-total strong,
+.return-glass-total strong {
+  color: var(--color-total-strong);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+}
+
+.payment-form input,
+.session-form input {
+  border-color: var(--color-product-border);
+  background: var(--color-panel-strong);
+  color: var(--color-total);
+  caret-color: var(--color-total);
+}
+
+.payment-form input:focus,
+.session-form input:focus {
+  border-color: var(--color-total);
+  outline: 3px solid rgba(0, 255, 102, 0.24);
+}
+
+.modal-error {
+  color: #ff7b7b;
+}
+
+.modal-actions button,
+.change-modal button,
+.session-form button,
+.session-summary-actions button {
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  color: var(--color-text);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.modal-actions button:hover,
+.change-modal button:hover,
+.session-form button:hover,
+.session-summary-actions button:hover {
+  border: 0;
+  background: var(--color-primary-light);
+  filter: brightness(1.2);
+}
+
+.modal-actions button:last-child {
+  background: #3a3a3a;
+}
+
+.payment-modal .modal-actions button:first-child,
+.session-form button,
+.change-modal button {
+  background: var(--color-cash);
+}
+
+.return-glass-modal .modal-actions button:first-child {
+  background: var(--color-warning);
+  color: #000000;
+}
+
+.admin-modal .modal-actions button:nth-child(2) {
+  background: var(--color-cash);
+}
+
+.admin-modal .modal-actions button:nth-child(3) {
+  background: var(--color-danger);
+}
+
+.modal-actions button:disabled,
+.modal-actions button:disabled:hover,
+.session-form button:disabled,
+.session-form button:disabled:hover {
+  border: 0;
+  background: #3a3a3a;
+  color: #94a3b8;
+  opacity: 0.65;
+  filter: none;
+}
+
+.change-modal {
+  border-color: var(--color-total);
+  background: var(--color-panel-strong);
+}
+
+.change-modal strong {
+  color: var(--color-total-strong);
+  font-weight: 900;
+  text-shadow: 0 0 24px rgba(0, 255, 0, 0.22);
+}
+
+.quantity-selector button {
+  border-color: var(--color-product-border);
+  background: var(--color-primary);
+  color: var(--color-text);
+}
+
+.quantity-selector button:hover {
+  border-color: var(--color-total);
+  background: var(--color-primary-light);
+}
+
+.quantity-selector button:disabled,
+.quantity-selector button:disabled:hover {
+  border-color: var(--color-product-border);
+  background: #3a3a3a;
+  color: #94a3b8;
+}
+
+.quantity-selector strong {
+  color: var(--color-total);
+}
+
+.session-summary-modal-header,
+.summary-section {
+  color: var(--color-text);
+}
+
+.session-details div,
+.economic-summary div,
+.glass-summary div,
+.session-products-table th,
+.session-products-table td {
+  border-color: var(--color-product-border);
+}
+
+.session-details dt,
+.economic-summary dt,
+.glass-summary dt {
+  color: var(--color-text-muted);
+}
+
+.session-details dd,
+.economic-summary dd,
+.glass-summary dd,
+.session-products-table td {
+  color: var(--color-text);
+}
+
+.economic-summary dd,
+.session-products-table td:last-child {
+  color: var(--color-total);
+  font-weight: 800;
+}
+
+.economic-summary dd {
+  font-size: clamp(24px, 2.4vw, 30px);
+}
+
+.summary-section {
+  border-top-color: var(--color-product-border);
+}
+
+.current-cash-total {
+  border-color: var(--color-total);
+  background: var(--color-panel-strong);
+}
+
+.current-cash-total span {
+  color: var(--color-text);
+}
+
+.current-cash-total strong {
+  color: var(--color-total-strong);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 900;
+}
+
+.session-summary-actions {
+  border-top-color: var(--color-product-border);
+  background: var(--color-panel);
+}
+
+.status-message {
+  border: 1px solid var(--color-total);
+  background: var(--color-panel-strong);
+  color: var(--color-text);
+  box-shadow: var(--shadow-panel);
+}
+
+* {
+  scrollbar-color: var(--color-primary-light) var(--color-bg-soft);
 }

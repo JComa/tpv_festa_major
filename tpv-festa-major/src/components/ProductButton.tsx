@@ -12,8 +12,10 @@ export function ProductButton({ producte, onClick }: ProductButtonProps) {
       type="button"
       onClick={() => onClick(producte)}
     >
-      <span>{producte.nom}</span>
-      <span>{producte.preu.toLocaleString('ca-ES')} €</span>
+      <span className="product-name">{producte.nom}</span>
+      <span className="product-price">
+        {producte.preu.toLocaleString('ca-ES')} €
+      </span>
     </button>
   )
 }

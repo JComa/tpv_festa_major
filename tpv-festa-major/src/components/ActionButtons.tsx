@@ -20,28 +20,42 @@ export function ActionButtons({
   return (
     <aside className="action-buttons" aria-label="Accions de venda">
       <button
-        className="cancel-button"
+        className="action-button cancel"
         type="button"
         disabled={disabled}
         onClick={onCancel}
       >
         Cancel·lar
       </button>
-      <button type="button" disabled={disabled} onClick={onCashPayment}>
+      <button
+        className="action-button cash"
+        type="button"
+        disabled={disabled}
+        onClick={onCashPayment}
+      >
         Efectiu
       </button>
-      <button type="button" disabled={disabled} onClick={onCardPayment}>
+      <button
+        className="action-button card"
+        type="button"
+        disabled={disabled}
+        onClick={onCardPayment}
+      >
         Targeta
       </button>
       <button
-        className="return-glass-button"
+        className="action-button glass-return"
         type="button"
         disabled={returnGlassDisabled}
         onClick={onReturnGlass}
       >
         RETORNAR GOT
       </button>
-      <button type="button" onClick={onAdmin}>
+      <button
+        className="action-button admin"
+        type="button"
+        onClick={onAdmin}
+      >
         Administració
       </button>
     </aside>
