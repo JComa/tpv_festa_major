@@ -23,6 +23,7 @@ Per provar-la a la xarxa local:
 npm run serve
 ```
 
+
 El terminal indicarà l'adreça IP local. L'accés HTTP des d'un altre dispositiu serveix per revisar la interfície, però la instal·lació i el mode offline requereixen HTTPS (excepte a `localhost`).
 
 ## Instal·lar-la
