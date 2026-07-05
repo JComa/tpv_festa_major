@@ -26,10 +26,15 @@ button {
 
 .app {
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: clamp(8px, 1.2vw, 16px);
+  padding:
+    max(clamp(8px, 1.2vw, 16px), env(safe-area-inset-top))
+    max(clamp(8px, 1.2vw, 16px), env(safe-area-inset-right))
+    max(clamp(8px, 1.2vw, 16px), env(safe-area-inset-bottom))
+    max(clamp(8px, 1.2vw, 16px), env(safe-area-inset-left));
 }
 
 .tpv-page {
@@ -721,6 +726,26 @@ button:disabled:hover {
 }
 
 @media (max-width: 650px) {
+  html,
+  body,
+  #root {
+    height: auto;
+    min-height: 100%;
+    overflow: auto;
+  }
+
+  .app {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .tpv-page {
+    min-height: calc(100vh - 16px);
+    min-height: calc(100dvh - 16px);
+  }
+
   .tpv-header {
     grid-template-columns: 1fr;
     gap: 5px;
@@ -732,11 +757,29 @@ button:disabled:hover {
   }
 
   .tpv-workspace {
-    grid-template-columns: minmax(0, 1fr) minmax(240px, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(280px, 42vh);
+    overflow: visible;
+  }
+
+  .productes-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(64px, auto);
+    max-height: 42vh;
+  }
+
+  .sale-summary {
+    min-height: 280px;
   }
 
   .action-buttons {
+    position: sticky;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    z-index: 4;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 6px;
+    border-radius: var(--radius-md);
+    background: rgba(18, 18, 18, 0.96);
   }
 
   .action-buttons button {
@@ -753,6 +796,18 @@ button:disabled:hover {
 }
 
 @media (max-width: 560px) {
+  .modal-backdrop {
+    padding:
+      max(12px, env(safe-area-inset-top))
+      max(12px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+  }
+
+  .modal {
+    padding: 20px;
+  }
+
   .sale-summary th,
   .sale-summary td {
     font-size: 12px;

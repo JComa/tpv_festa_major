@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="TPV Festa Major">
+  <rect width="512" height="512" rx="96" fill="#121212"/>
+  <rect x="62" y="62" width="388" height="388" rx="64" fill="#222222" stroke="#00ff66" stroke-width="16"/>
+  <path d="M146 156h220M256 156v208M174 254h164" fill="none" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+  <circle cx="174" cy="364" r="25" fill="#ffd600"/>
+  <circle cx="338" cy="364" r="25" fill="#00ff66"/>
+</svg>
