@@ -21,7 +21,7 @@ function isProduct(value: unknown): value is Product {
 
 export async function loadProducts(): Promise<Product[]> {
   try {
-    const response = await fetch('/config/productes.json')
+    const response = await fetch(`${import.meta.env.BASE_URL}config/productes.json`)
 
     if (!response.ok) {
       throw new Error(

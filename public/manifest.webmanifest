@@ -3,9 +3,9 @@
   "short_name": "TPV Festa",
   "description": "Terminal de punt de venda de la Festa Major",
   "lang": "ca",
-  "id": "/",
-  "start_url": "/",
-  "scope": "/",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
@@ -14,13 +14,13 @@
   "categories": ["business", "finance", "utilities"],
   "icons": [
     {
-      "src": "/app-icon.svg",
+      "src": "./app-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/app-icon-maskable.svg",
+      "src": "./app-icon-maskable.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"

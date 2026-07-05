@@ -1,18 +1,29 @@
-const CACHE_NAME = 'tpv-festa-major-v1'
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/app-icon.svg', '/app-icon-maskable.svg', '/config/productes.json']
+const CACHE_NAME = 'tpv-festa-major-v2'
+const BASE_URL = new URL('./', self.location.href)
+const appUrl = (path = '') => new URL(path, BASE_URL).href
+const INDEX_URL = appUrl('index.html')
+const PRODUCTS_URL = appUrl('config/productes.json')
+const APP_SHELL = [
+  appUrl(),
+  INDEX_URL,
+  appUrl('manifest.webmanifest'),
+  appUrl('app-icon.svg'),
+  appUrl('app-icon-maskable.svg'),
+  PRODUCTS_URL,
+]
 
 async function cacheAppShell() {
   const cache = await caches.open(CACHE_NAME)
   await cache.addAll(APP_SHELL)
 
-  const indexResponse = await fetch('/index.html', { cache: 'no-cache' })
+  const indexResponse = await fetch(INDEX_URL, { cache: 'no-cache' })
   const indexHtml = await indexResponse.clone().text()
   const assetUrls = Array.from(
-    indexHtml.matchAll(/(?:src|href)="(\/assets\/[^"?]+)"/g),
-    (match) => match[1],
+    indexHtml.matchAll(/(?:src|href)="([^"?]*\/assets\/[^"?]+)"/g),
+    (match) => new URL(match[1], BASE_URL).href,
   )
 
-  await cache.put('/index.html', indexResponse)
+  await cache.put(INDEX_URL, indexResponse)
 
   if (assetUrls.length > 0) {
     await cache.addAll(assetUrls)
@@ -80,12 +91,12 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request, '/index.html'))
+    event.respondWith(networkFirst(request, INDEX_URL))
     return
   }
 
-  if (url.pathname === '/config/productes.json') {
-    event.respondWith(networkFirst(request, '/config/productes.json'))
+  if (url.href === PRODUCTS_URL) {
+    event.respondWith(networkFirst(request, PRODUCTS_URL))
     return
   }
 

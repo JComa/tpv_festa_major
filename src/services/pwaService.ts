@@ -4,8 +4,10 @@ export function registerServiceWorker(): void {
   }
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js').catch((error: unknown) => {
-      console.error("No s'ha pogut activar el mode sense connexió:", error)
-    })
+    navigator.serviceWorker
+      .register(`${import.meta.env.BASE_URL}service-worker.js`)
+      .catch((error: unknown) => {
+        console.error("No s'ha pogut activar el mode sense connexió:", error)
+      })
   })
 }
