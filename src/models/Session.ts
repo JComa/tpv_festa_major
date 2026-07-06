@@ -5,6 +5,7 @@ export type Session = {
   name: string
   createdAt: string
   terminal: string
+  initialCash: number
   operationCounter: number
   operations: Operation[]
 }

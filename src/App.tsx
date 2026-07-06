@@ -68,6 +68,7 @@ function App() {
   const [saleItems, setSaleItems] = useState<SaleLine[]>([])
   const [session, setSession] = useState<Session | null>(null)
   const [sessionNameInput, setSessionNameInput] = useState('')
+  const [initialCashInput, setInitialCashInput] = useState('')
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false)
   const [isSessionSummaryModalOpen, setIsSessionSummaryModalOpen] =
     useState(false)
@@ -331,8 +332,14 @@ function App() {
 
   function handleStartSession() {
     const normalizedName = normalizeSessionName(sessionNameInput)
+    const initialCash = Number(initialCashInput)
 
-    if (normalizedName === '') {
+    if (
+      normalizedName === '' ||
+      initialCashInput.trim() === '' ||
+      !Number.isFinite(initialCash) ||
+      initialCash < 0
+    ) {
       return
     }
 
@@ -342,6 +349,7 @@ function App() {
       name: normalizedName,
       createdAt: now.toISOString(),
       terminal: TERMINAL_NAME,
+      initialCash,
       operationCounter: 1,
       operations: [],
     }
@@ -349,6 +357,7 @@ function App() {
     isSessionClosingRef.current = false
     setSession(newSession)
     setSessionNameInput('')
+    setInitialCashInput('')
     setSaleItems([])
     clearCurrentSale()
     setIsSessionSummaryModalOpen(false)
@@ -386,6 +395,15 @@ function App() {
           : item,
       )
     })
+  }
+
+  function handleInitialCashChange(value: string) {
+    const normalizedValue = value.replace(',', '.')
+    const sanitizedValue = normalizedValue
+      .replace(/[^0-9.]/g, '')
+      .replace(/(\..*)\./g, '$1')
+
+    setInitialCashInput(sanitizedValue)
   }
 
   function handleIncrement(productId: string) {
@@ -614,6 +632,7 @@ function App() {
       setSession(null)
       setSaleItems([])
       setSessionNameInput('')
+      setInitialCashInput('')
       setIsAdminModalOpen(false)
       setIsSessionSummaryModalOpen(false)
       setIsReturnGlassModalOpen(false)
@@ -634,6 +653,7 @@ function App() {
       isSaleEmpty={isSaleEmpty}
       isSessionModalOpen={hasRestoredPersistence && session === null}
       sessionNameInput={sessionNameInput}
+      initialCashInput={initialCashInput}
       isAdminModalOpen={isAdminModalOpen}
       isSessionSummaryModalOpen={isSessionSummaryModalOpen}
       sessionSummary={sessionSummary}
@@ -647,6 +667,7 @@ function App() {
       returnGlassQuantity={returnGlassQuantity}
       statusMessage={statusMessage}
       onSessionNameChange={setSessionNameInput}
+      onInitialCashChange={handleInitialCashChange}
       onStartSession={handleStartSession}
       onProductClick={handleProductClick}
       onIncrement={handleIncrement}

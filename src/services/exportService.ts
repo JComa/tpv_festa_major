@@ -31,6 +31,7 @@ export function buildSessionExport({
       closedAt: exportedAt,
     },
     summary: {
+      initialCash: summary.initialCash,
       totalSales: summary.totalSales,
       totalCash: summary.totalCash,
       totalCard: summary.totalCard,

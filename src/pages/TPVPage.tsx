@@ -23,6 +23,7 @@ type TPVPageProps = {
   isSaleEmpty: boolean
   isSessionModalOpen: boolean
   sessionNameInput: string
+  initialCashInput: string
   isAdminModalOpen: boolean
   isSessionSummaryModalOpen: boolean
   sessionSummary: SessionSummary | null
@@ -36,6 +37,7 @@ type TPVPageProps = {
   returnGlassQuantity: number
   statusMessage: string
   onSessionNameChange: (value: string) => void
+  onInitialCashChange: (value: string) => void
   onStartSession: () => void
   onProductClick: (producte: Product) => void
   onIncrement: (productId: string) => void
@@ -74,6 +76,7 @@ export function TPVPage({
   isSaleEmpty,
   isSessionModalOpen,
   sessionNameInput,
+  initialCashInput,
   isAdminModalOpen,
   isSessionSummaryModalOpen,
   sessionSummary,
@@ -87,6 +90,7 @@ export function TPVPage({
   returnGlassQuantity,
   statusMessage,
   onSessionNameChange,
+  onInitialCashChange,
   onStartSession,
   onProductClick,
   onIncrement,
@@ -176,7 +180,9 @@ export function TPVPage({
       {isSessionModalOpen && (
         <SessionModal
           sessionName={sessionNameInput}
+          initialCash={initialCashInput}
           onSessionNameChange={onSessionNameChange}
+          onInitialCashChange={onInitialCashChange}
           onStartSession={onStartSession}
         />
       )}

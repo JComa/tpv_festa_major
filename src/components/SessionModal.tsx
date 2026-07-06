@@ -1,12 +1,16 @@
 type SessionModalProps = {
   sessionName: string
+  initialCash: string
   onSessionNameChange: (value: string) => void
+  onInitialCashChange: (value: string) => void
   onStartSession: () => void
 }
 
 export function SessionModal({
   sessionName,
+  initialCash,
   onSessionNameChange,
+  onInitialCashChange,
   onStartSession,
 }: SessionModalProps) {
   return (
@@ -34,7 +38,24 @@ export function SessionModal({
             autoFocus
             onChange={(event) => onSessionNameChange(event.target.value)}
           />
-          <button type="submit" disabled={sessionName.trim() === ''}>
+          <label htmlFor="initial-cash">Efectiu inicial en caixa (€)</label>
+          <input
+            id="initial-cash"
+            type="text"
+            inputMode="decimal"
+            value={initialCash}
+            placeholder="0,00"
+            onChange={(event) => onInitialCashChange(event.target.value)}
+          />
+          <button
+            type="submit"
+            disabled={
+              sessionName.trim() === '' ||
+              initialCash.trim() === '' ||
+              !Number.isFinite(Number(initialCash)) ||
+              Number(initialCash) < 0
+            }
+          >
             Iniciar
           </button>
         </form>

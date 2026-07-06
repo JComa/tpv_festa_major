@@ -13,6 +13,7 @@ export type SessionExport = {
   }
   summary: {
     totalSales: number
+    initialCash: number
     totalCash: number
     totalCard: number
     totalGlassReturns: number

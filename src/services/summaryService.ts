@@ -9,6 +9,7 @@ export type ProductSessionSummary = {
 }
 
 export type SessionSummary = {
+  initialCash: number
   totalSales: number
   totalCash: number
   totalCard: number
@@ -84,11 +85,12 @@ export function calculateSessionSummary(
   )
 
   return {
+    initialCash: session.initialCash ?? 0,
     totalSales,
     totalCash,
     totalCard,
     totalGlassReturns,
-    currentCash: totalCash + totalGlassReturns,
+    currentCash: (session.initialCash ?? 0) + totalCash + totalGlassReturns,
     operationCount: sessionOperations.length,
     products: Array.from(productsById.values()),
     glassesAdded,

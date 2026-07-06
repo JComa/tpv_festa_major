@@ -64,6 +64,10 @@ export function SessionSummaryModal({
           <h3 id="economic-title">Resum econòmic</h3>
           <dl className="economic-summary">
             <div>
+              <dt>Caixa inicial</dt>
+              <dd>{formatMoney(summary.initialCash)}</dd>
+            </div>
+            <div>
               <dt>Total vendes</dt>
               <dd>{formatMoney(summary.totalSales)}</dd>
             </div>

@@ -89,6 +89,8 @@ function isSession(value: unknown): value is Session {
     isNonEmptyString(value.name) &&
     isNonEmptyString(value.createdAt) &&
     isNonEmptyString(value.terminal) &&
+    (value.initialCash === undefined ||
+      (isFiniteNumber(value.initialCash) && value.initialCash >= 0)) &&
     Number.isInteger(value.operationCounter) &&
     (value.operationCounter as number) > maximumOperationNumber &&
     hasValidOperations
@@ -191,7 +193,19 @@ export function saveActiveSession(data: PersistedSession): void {
 }
 
 export function loadActiveSession(): PersistedSession | null {
-  return loadValue(ACTIVE_SESSION_KEY, isPersistedSession)
+  const persistedSession = loadValue(ACTIVE_SESSION_KEY, isPersistedSession)
+
+  if (persistedSession === null) {
+    return null
+  }
+
+  return {
+    ...persistedSession,
+    session: {
+      ...persistedSession.session,
+      initialCash: persistedSession.session.initialCash ?? 0,
+    },
+  }
 }
 
 export function clearActiveSession(): void {
